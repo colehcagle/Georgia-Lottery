@@ -1,0 +1,482 @@
+Microsoft (R) Macro Assembler Version 6.15.8803		    04/06/22 15:04:35
+Georgia Lottery Simulation				(Lab10.asm)  Page 1 - 1
+
+
+				title	Georgia Lottery Simulation				(Lab10.asm)
+				;
+				; Cole Cagle
+				; CPEN 3710
+				; April 4, 2022
+				;
+				; This is an assembly language program that will simulate the drawing of the Georgia Lottery. The program will be executed through a structure that will
+				; take 6 balls that are numbered 1-47. The user will enter their 6 numbers to see if they were a winner or not. The entered values will be stored in another
+				; structure of the same type. 
+				;
+
+				include Irvine32.inc					; include Irvine's routines
+			      C ; Include file for Irvine32.lib             (Irvine32.inc)
+			      C 
+			      C INCLUDE SmallWin.inc		; MS-Windows prototypes, structures, and constants
+			      C .NOLIST
+			      C .LIST
+			      C 
+			      C .NOLIST
+			      C .LIST
+			      C 
+
+				mOutput MACRO text					; macro for displaying strings throughout execution of code
+				mov EDX, OFFSET text
+				call WriteString                                        ; replace call WriteString with mOutput
+				ENDM							; end of macro
+
+ 00000000			.data
+ 00000018			Lottery STRUCT
+ 00000000  00000000		array1 DWORD 0, 0, 0, 0, 0, 0				; defining the structure with an array of 6 values
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+				Lottery ENDS
+
+ 00000000 00000000		random Lottery <>
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+ 00000018 00000000		user Lottery <>
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+	   00000000
+															
+ 00000030 4A 75 6D 62 6F	PROMPT BYTE "Jumbo Bucks drawing results: ", 0		; defining the prompts of the program
+	   20 42 75 63 6B
+	   73 20 64 72 61
+	   77 69 6E 67 20
+	   72 65 73 75 6C
+	   74 73 3A 20 00
+
+ 0000004E 50 6C 65 61 73	PROMPT1 BYTE "Please enter your first number: ", 0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 66 69
+	   72 73 74 20 6E
+	   75 6D 62 65 72
+	   3A 20 00
+ 0000006F 50 6C 65 61 73	PROMPT2 BYTE "Please enter your second number: ", 0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 73 65
+	   63 6F 6E 64 20
+	   6E 75 6D 62 65
+	   72 3A 20 00
+ 00000091 50 6C 65 61 73	PROMPT3 BYTE "Please enter your third number: ", 0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 74 68
+	   69 72 64 20 6E
+	   75 6D 62 65 72
+	   3A 20 00
+ 000000B2 50 6C 65 61 73	PROMPT4 BYTE "Please enter your fourth number: ", 0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 66 6F
+	   75 72 74 68 20
+	   6E 75 6D 62 65
+	   72 3A 20 00
+ 000000D4 50 6C 65 61 73	PROMPT5 BYTE "Please enter your fifth number: ", 0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 66 69
+	   66 74 68 20 6E
+	   75 6D 62 65 72
+	   3A 20 00
+ 000000F5 50 6C 65 61 73	PROMPT6 BYTE "Please enter your sixth number: ", 0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 73 69
+	   78 74 68 20 6E
+	   75 6D 62 65 72
+	   3A 20 00
+
+ 00000116 59 6F 75 20 68	PROMPTW1 BYTE "You have matched 3 of the 6 lottery balls. Your ticket wins $5!", 0
+	   61 76 65 20 6D
+	   61 74 63 68 65
+	   64 20 33 20 6F
+	   66 20 74 68 65
+	   20 36 20 6C 6F
+	   74 74 65 72 79
+	   20 62 61 6C 6C
+	   73 2E 20 59 6F
+	   75 72 20 74 69
+	   63 6B 65 74 20
+	   77 69 6E 73 20
+	   24 35 21 00
+ 00000156 59 6F 75 20 68	PROMPTW2 BYTE "You have matched 4 of the 6 lottery balls. Your ticket wins $50!", 0
+	   61 76 65 20 6D
+	   61 74 63 68 65
+	   64 20 34 20 6F
+	   66 20 74 68 65
+	   20 36 20 6C 6F
+	   74 74 65 72 79
+	   20 62 61 6C 6C
+	   73 2E 20 59 6F
+	   75 72 20 74 69
+	   63 6B 65 74 20
+	   77 69 6E 73 20
+	   24 35 30 21 00
+ 00000197 59 6F 75 20 68	PROMPTW3 BYTE "You have matched 5 of the 6 lottery balls. Your ticket wins $500!", 0
+	   61 76 65 20 6D
+	   61 74 63 68 65
+	   64 20 35 20 6F
+	   66 20 74 68 65
+	   20 36 20 6C 6F
+	   74 74 65 72 79
+	   20 62 61 6C 6C
+	   73 2E 20 59 6F
+	   75 72 20 74 69
+	   63 6B 65 74 20
+	   77 69 6E 73 20
+	   24 35 30 30 21
+	   00
+ 000001D9 59 6F 75 20 68	PROMPTW4 BYTE "You have matched 6 of the 6 lottery balls. Your ticket wins jackpot!", 0
+	   61 76 65 20 6D
+	   61 74 63 68 65
+	   64 20 36 20 6F
+	   66 20 74 68 65
+	   20 36 20 6C 6F
+	   74 74 65 72 79
+	   20 62 61 6C 6C
+	   73 2E 20 59 6F
+	   75 72 20 74 69
+	   63 6B 65 74 20
+	   77 69 6E 73 20
+	   6A 61 63 6B 70
+	   6F 74 21 00
+
+ 0000021E 59 6F 75 20 68	PROMPTL1 BYTE "You have matched 0 of the 6 lottery balls. Your ticket wins $0.", 0
+	   61 76 65 20 6D
+	   61 74 63 68 65
+	   64 20 30 20 6F
+	   66 20 74 68 65
+	   20 36 20 6C 6F
+	   74 74 65 72 79
+	   20 62 61 6C 6C
+	   73 2E 20 59 6F
+	   75 72 20 74 69
+	   63 6B 65 74 20
+	   77 69 6E 73 20
+	   24 30 2E 00
+ 0000025E 59 6F 75 20 68	PROMPTL2 BYTE "You have matched 1 of the 6 lottery balls. Your ticket wins $0.", 0
+	   61 76 65 20 6D
+	   61 74 63 68 65
+	   64 20 31 20 6F
+	   66 20 74 68 65
+	   20 36 20 6C 6F
+	   74 74 65 72 79
+	   20 62 61 6C 6C
+	   73 2E 20 59 6F
+	   75 72 20 74 69
+	   63 6B 65 74 20
+	   77 69 6E 73 20
+	   24 30 2E 00
+ 0000029E 59 6F 75 20 68	PROMPTL3 BYTE "You have matched 2 of the 6 lottery balls. Your ticket wins $0.", 0
+	   61 76 65 20 6D
+	   61 74 63 68 65
+	   64 20 32 20 6F
+	   66 20 74 68 65
+	   20 36 20 6C 6F
+	   74 74 65 72 79
+	   20 62 61 6C 6C
+	   73 2E 20 59 6F
+	   75 72 20 74 69
+	   63 6B 65 74 20
+	   77 69 6E 73 20
+	   24 30 2E 00
+
+ 000002DE 50 6C 65 61 73	PROMPTE BYTE "Please enter a value between 1 and 47 inclusive.", 0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   76 61 6C 75 65
+	   20 62 65 74 77
+	   65 65 6E 20 31
+	   20 61 6E 64 20
+	   34 37 20 69 6E
+	   63 6C 75 73 69
+	   76 65 2E 00
+
+ 00000000			.code							; beginning of code
+ 00000000			main proc						; beginning of main procedure
+
+ 00000000  E8 00000000 E	call Randomize						; calls Randomize to generate random values
+ 00000005  BE 00000000 R	mov ESI, OFFSET random					; saves the random values
+ 0000000A  E8 000001F8		call GenerateDraw                                       ; calls for GenerateDraw sub-proc
+				mOutput PROMPT					    	; displays PROMPT
+ 0000000F  BA 00000030 R     1	mov EDX, OFFSET PROMPT
+ 00000014  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000019  BE 00000000 R	mov ESI, OFFSET random.array1				; point to array1 
+ 0000001E  B9 00000006		mov ECX, 6						; loop 6 times for the 6 values
+
+ 00000023			LOOP1:							; beginning of LOOP1
+ 00000023  8B 06		mov EAX, [ESI]						; move number from structure into EAX
+ 00000025  E8 00000000 E	call WriteInt						; displays number
+ 0000002A  B0 20		mov AL, ' '						; creates a space between numbers when displayed
+ 0000002C  E8 00000000 E	call WriteChar						; displays the created space
+ 00000031  83 C6 04		add ESI, 4						; point to next value in structure
+ 00000034  E2 ED		loop LOOP1						; loop back to beginning of LOOP1
+
+ 00000036  E8 00000000 E	call Crlf						; blank line
+
+ 0000003B			NUM1:							; beginning of NUM1 for first value
+				mOutput PROMPT1						; displays PROMPT1
+ 0000003B  BA 0000004E R     1	mov EDX, OFFSET PROMPT1
+ 00000040  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000045  E8 00000000 E	call ReadInt						; reads the value the user entered
+ 0000004A  A3 00000018 R	mov [user.array1], EAX					; saves the value in the structure
+ 0000004F  B9 00000000		mov ECX, 0                                              ; moves 0 into ECX (do not check duplicate; not possible to have one)
+ 00000054  E8 000001EA		call valid                                              ; calls for valid sub-proc
+ 00000059  83 F8 01		cmp EAX, 1                                              ; compares 1 to value in EAX
+ 0000005C  74 0C		je NUM2                                                 ; if equal, jump to NUM2 for second number
+				mOutput PROMPTE 	                                  ; prints error message if jump is not made
+ 0000005E  BA 000002DE R     1	mov EDX, OFFSET PROMPTE
+ 00000063  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000068  EB D1		jmp NUM1                                                ; jump back to beginning of NUM1 if error
+
+ 0000006A			NUM2:                                                   ; beginning of NUM2 for second value
+				mOutput PROMPT2                                         ; displays PROMPT2
+ 0000006A  BA 0000006F R     1	mov EDX, OFFSET PROMPT2
+ 0000006F  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000074  E8 00000000 E	call ReadInt                                            ; reads the value the user entered
+ 00000079  A3 0000001C R	mov [user.array1 + 4], EAX                              ; saves the value in the structure
+ 0000007E  B9 00000001		mov ECX, 1                                              ; moves 1 into ECX (check duplicate)
+ 00000083  E8 000001BB		call valid                                              ; calls for valid sub-proc
+ 00000088  83 F8 01		cmp EAX, 1                                              ; compares 1 to value in EAX
+ 0000008B  74 0C		je NUM3                                                 ; if equal, jump to NUM3 for third number
+				mOutput PROMPTE                                         ; prints error message if jump is not made
+ 0000008D  BA 000002DE R     1	mov EDX, OFFSET PROMPTE
+ 00000092  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000097  EB D1		jmp NUM2                                                ; jump back to beginning of NUM2 if error
+
+ 00000099			NUM3:                                                   ; beginning of NUM3 for third value
+				mOutput PROMPT3                                         ; displays PROMPT3
+ 00000099  BA 00000091 R     1	mov EDX, OFFSET PROMPT3
+ 0000009E  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000000A3  E8 00000000 E	call ReadInt                                            ; reads the value the user entered
+ 000000A8  A3 00000020 R	mov [user.array1 + 8], EAX                              ; saves the value in the structure
+ 000000AD  B9 00000002		mov ECX, 2                                              ; moves 2 into ECX (checks for duplicate with first two numbers)
+ 000000B2  E8 0000018C		call valid                                              ; calls for valid sub-proc
+ 000000B7  83 F8 01		cmp EAX, 1                                              ; compares 1 to value in EAX
+ 000000BA  74 0C		je NUM4                                                 ; if equal, jump to NUM4 for fourth number
+				mOutput PROMPTE                                         ; prints error message if jump is not made
+ 000000BC  BA 000002DE R     1	mov EDX, OFFSET PROMPTE
+ 000000C1  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000000C6  EB D1		jmp NUM3                                                ; jump back to beginning of NUM3 if error
+
+ 000000C8			NUM4:                                                   ; beginning of NUM4 for fourth value
+				mOutput PROMPT4                                         ; displays PROMPT4
+ 000000C8  BA 000000B2 R     1	mov EDX, OFFSET PROMPT4
+ 000000CD  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000000D2  E8 00000000 E	call ReadInt                                            ; reads the value the user entered
+ 000000D7  A3 00000024 R	mov [user.array1 + 12], EAX                              ; saves the value in the structure
+ 000000DC  B9 00000003		mov ECX, 3                                              ; moves 3 into ECX (checks for duplicate with first three numbers)
+ 000000E1  E8 0000015D		call valid                                              ; calls for valid sub-proc
+ 000000E6  83 F8 01		cmp EAX, 1                                              ; compares 1 to value in EAX
+ 000000E9  74 0C		je NUM5                                                 ; if equal, jump to NUM5 for fifth number
+				mOutput PROMPTE                                         ; prints error message if jump is not made
+ 000000EB  BA 000002DE R     1	mov EDX, OFFSET PROMPTE
+ 000000F0  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000000F5  EB D1		jmp NUM4                                                ; jump back to beginning of NUM4 if error
+
+ 000000F7			NUM5:                                                   ; beginning of NUM5 for fifth value
+				mOutput PROMPT5                                         ; displays PROMPT5
+ 000000F7  BA 000000D4 R     1	mov EDX, OFFSET PROMPT5
+ 000000FC  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000101  E8 00000000 E	call ReadInt                                            ; reads the value the user entered 
+ 00000106  A3 00000028 R	mov [user.array1 + 16], EAX                             ; saves the value in the structure
+ 0000010B  B9 00000004		mov ECX, 4                                              ; moves 4 into ECX (checks for duplicate with first four numbers)
+ 00000110  E8 0000012E		call valid                                              ; calls for valid sub-proc
+ 00000115  83 F8 01		cmp EAX, 1                                              ; compares 1 to value in EAX
+ 00000118  74 0C		je NUM6                                                 ; if equal, jump to NUM6 for sixth number
+				mOutput PROMPTE                                         ; prints error message if jump is not made
+ 0000011A  BA 000002DE R     1	mov EDX, OFFSET PROMPTE
+ 0000011F  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000124  EB D1		jmp NUM5                                                ; jump back to beginning of NUM5 if error
+
+ 00000126			NUM6:                                                   ; beginning of NUM6 for sixth value
+				mOutput PROMPT6                                         ; displays PROMPT6
+ 00000126  BA 000000F5 R     1	mov EDX, OFFSET PROMPT6
+ 0000012B  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000130  E8 00000000 E	call ReadInt                                            ; reads the value the user entered 
+ 00000135  A3 0000002C R	mov [user.array1 + 20], EAX                             ; saves the value in the structure
+ 0000013A  B9 00000005		mov ECX, 5                                              ; moves 5 into ECX (checks for duplicates with first five numbers)
+ 0000013F  E8 000000FF		call valid                                              ; calls for valid sub-proc
+ 00000144  83 F8 01		cmp EAX, 1                                              ; compares 1 to value in EAX
+ 00000147  74 11		je JUMP1                                                ; if equal, jump to JUMP1
+				mOutput PROMPTE                                         ; prints error message if jump is not made
+ 00000149  BA 000002DE R     1	mov EDX, OFFSET PROMPTE
+ 0000014E  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 00000153  EB D1		jmp NUM6                                                ; jump back to beginning of NUM6 if error
+
+ 00000155  E8 00000000 E	call Crlf                                               ; blank line
+
+ 0000015A			JUMP1:                                                  ; beginning of JUMP1
+ 0000015A  53			push EBX                                                ; places EBX on stack
+ 0000015B  B8 00000000		mov EAX, 0                                              ; clears EAX
+ 00000160  B9 00000006		mov ECX, 6                                              ; moves 6 into ECX for 6 values to be compared
+ 00000165  BF 00000018 R	mov EDI, OFFSET user.array1                             ; directs pointer to the user entered values
+
+ 0000016A			LOOP2:                                                  ; beginning of LOOP2
+ 0000016A  8B 1F		mov EBX, [EDI]                                          ; takes value from the structure
+ 0000016C  BE 00000000 R	mov ESI, OFFSET random.array1                           ; directs pointer to the random generated values
+ 00000171  BA 00000006		mov EDX, 6                                              ; moves 6 into EDX because there are 6 values to be checked
+
+ 00000176			JUMP2:                                                  ; beginning of JUMP2
+ 00000176  3B 1E		cmp EBX, [ESI]                                          ; comparison for user value and random value in structure
+ 00000178  74 08		je JUMP3                                                ; if equal, jump to JUMP3
+ 0000017A  83 C6 04		add ESI, 4                                              ; moves to next random value to be compared
+ 0000017D  4A			dec EDX                                                 ; decrements EDX for every value checked
+ 0000017E  75 F6		jne JUMP2                                               ; if not equal, jump back to beginning of JUMP2
+ 00000180  EB 01		jmp JUMP4                                               ; jump to JUMP4
+
+ 00000182			JUMP3:                                                  ; beginning of JUMP3
+ 00000182  40			inc EAX                                                 ; increment EAX for matches 
+
+ 00000183			JUMP4:                                                  ; beginning of JUMP4
+ 00000183  83 C7 04		add EDI, 4                                              ; moves to next value from user to be compared
+ 00000186  E2 E2		loop LOOP2                                              ; loop back to beginning of LOOP2
+ 00000188  5B			pop EBX                                                 ; takes EBX off of stack
+
+ 00000189  83 F8 00		cmp EAX, 0                                              ; compares 0 to EAX for matching values
+ 0000018C  74 1E		je JUMP5                                                ; if equal, jump to JUMP5
+ 0000018E  83 F8 01		cmp EAX, 1                                              ; compares 1 to EAX for matching values
+ 00000191  74 25		je JUMP6                                                ; if equal, jump to JUMP6
+ 00000193  83 F8 02		cmp EAX, 2                                              ; compares 2 to EAX for matching values
+ 00000196  74 2C		je JUMP7                                                ; if equal, jump to JUMP7
+ 00000198  83 F8 03		cmp EAX, 3                                              ; compares 3 to EAX for matching values
+ 0000019B  74 33		je JUMP8                                                ; if equal, jump to JUMP8
+ 0000019D  83 F8 04		cmp EAX, 4                                              ; compares 4 to EAX for matching values
+ 000001A0  74 3A		je JUMP9                                                ; if equal, jump to JUMP9
+ 000001A2  83 F8 05		cmp EAX, 5                                              ; compares 5 to EAX for matching values
+ 000001A5  74 41		je JUMP10                                               ; if equal, jump to JUMP10
+ 000001A7  83 F8 06		cmp EAX, 6                                              ; compares 6 to EAX for matching values
+ 000001AA  74 48		je JUMP11                                               ; if equal, jump to JUMP11
+
+ 000001AC			JUMP5:                                                  ; beginning of JUMP5
+				mOutput PROMPTL1                                        ; displays PROMPTL1
+ 000001AC  BA 0000021E R     1	mov EDX, OFFSET PROMPTL1
+ 000001B1  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000001B6  EB 48		jmp JUMP12						; jump to JUMP12
+
+ 000001B8			JUMP6:                                                  ; beginning of JUMP6
+				mOutput PROMPTL2                                        ; displays PROMPTL2
+ 000001B8  BA 0000025E R     1	mov EDX, OFFSET PROMPTL2
+ 000001BD  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000001C2  EB 3C		jmp JUMP12						; jump to JUMP12
+
+ 000001C4			JUMP7:                                                  ; beginning of JUMP7
+				mOutput PROMPTL3                                        ; displays PROMPTL3
+ 000001C4  BA 0000029E R     1	mov EDX, OFFSET PROMPTL3
+ 000001C9  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000001CE  EB 30		jmp JUMP12						; jump to JUMP12
+
+ 000001D0			JUMP8:                                                  ; beginning of JUMP8
+				mOutput PROMPTW1                                        ; displays PROMPTW1
+ 000001D0  BA 00000116 R     1	mov EDX, OFFSET PROMPTW1
+ 000001D5  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000001DA  EB 24		jmp JUMP12						; jump to JUMP12
+
+ 000001DC			JUMP9:                                                  ; beginning of JUMP9
+				mOutput PROMPTW2                                        ; displays PROMPTW2
+ 000001DC  BA 00000156 R     1	mov EDX, OFFSET PROMPTW2
+ 000001E1  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000001E6  EB 18		jmp JUMP12						; jump to JUMP12
+
+ 000001E8			JUMP10:                                                 ; beginning of JUMP10
+				mOutput PROMPTW3                                        ; displays PROMPTW3
+ 000001E8  BA 00000197 R     1	mov EDX, OFFSET PROMPTW3
+ 000001ED  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000001F2  EB 0C		jmp JUMP12						; jump to JUMP12
+
+ 000001F4			JUMP11:                                                 ; beginning of JUMP11
+				mOutput PROMPTW4                                        ; displays PROMPTW4
+ 000001F4  BA 000001D9 R     1	mov EDX, OFFSET PROMPTW4
+ 000001F9  E8 00000000 E     1	call WriteString                                        ; replace call WriteString with mOutput
+ 000001FE  EB 00		jmp JUMP12						; jump to JUMP12
+
+ 00000200			JUMP12:							; beginning of JUMP12
+				exit                                                    ; terminates execution of main proc
+ 00000207			main ENDP                                               ; end of main proc
+
+				;
+				; This is the GenerateDraw sub-proc that will generate 6 random values for the lottery with no duplicates.
+				;
+
+ 00000207			GenerateDraw proc                                       ; beginning of GenerateDraw sub-proc
+
+ 00000207  BB 00000000		mov EBX, 0                                              ; clears EBX
+ 0000020C  53			push EBX                                                ; places EBX on stack
+ 0000020D  8B FE		mov EDI, ESI                                            ; directs pointer to structure
+ 0000020F  83 C7 00		add EDI, OFFSET Lottery.array1                          ; point at array1 for the random 6 values
+ 00000212  B9 00000006		mov ECX, 6                                              ; moves 6 into ECX for 6 values
+
+ 00000217			LOOP1:                                                  ; beginning of LOOP1
+ 00000217  B8 0000002F		mov EAX, 47                                             ; moves 47 into EAX (max value)
+ 0000021C  E8 00000000 E	call RandomRange                                        ; creates a specified range (0-46)
+ 00000221  40			inc EAX                                                 ; range is now 1-47 in EAX
+ 00000222  8B DE		mov EBX, ESI                                            ; point to structure
+ 00000224  83 C3 00		add EBX, OFFSET Lottery.array1                          ; points to the beginning of the 6 values to generate
+ 00000227  BA 00000006		mov EDX, 6                                              ; 6 values for generating
+ 0000022C  2B D1		sub EDX, ECX                                            ; subtracts ECX from EDX
+ 0000022E  74 0A		jz JUMP1                                                ; if zero, jump to JUMP1
+
+ 00000230			LOOP2:                                                  ; beginning of LOOP2
+ 00000230  3B 03		cmp EAX, [EBX]                                          ; compare to see if generated values are equal
+ 00000232  74 E3		je LOOP1                                                ; if equal, jump to LOOP1 for another value
+ 00000234  83 C3 04		add EBX, 4                                              ; next number to be generated
+ 00000237  4A			dec EDX                                                 ; decrement values to be checked
+ 00000238  75 F6		jne LOOP2                                               ; if not equal, jump to beginning of LOOP2 to be compared again
+
+ 0000023A			JUMP1:                                                  ; beginning of JUMP1
+ 0000023A  89 07		mov [EDI], EAX                                          ; saves acceptable generated value to structure
+ 0000023C  83 C7 04		add EDI, 4                                              ; next number
+ 0000023F  E2 D6		loop LOOP1                                              ; end of LOOP1, loops until 6 acceptable values generated
+ 00000241  5B			pop EBX							; takes EBX off the stack
+ 00000242  C3			ret                                                     ; return to main proc
+
+ 00000243			GenerateDraw ENDP                                       ; end of GenerateDraw sub-proc
+
+				;
+				; This is the valid sub-proc that will check and see if the values are valid; 1 is acceptable and 0 is not. This comparison is 
+				; in the main proc in blocks NUM1 through NUM6.
+				;
+
+ 00000243			valid proc                                              ; beginning of valid sub-proc
+
+ 00000243  83 F8 01		cmp EAX, 1                                              ; compares 1 to value stored in EAX
+ 00000246  7C 1E		jl JUMP1                                                ; if less than 1, jump to JUMP1
+ 00000248  83 F8 2F		cmp EAX, 47                                             ; compares 47 to value stored in EAX
+ 0000024B  7F 19		jg JUMP1                                                ; if greater than 47, jump to JUMP1
+ 0000024D  83 F9 00		cmp ECX, 0                                              ; compares ECX to 0
+ 00000250  74 0E		je JUMP2                                                ; if first value (will be valid), jump to JUMP2
+ 00000252  BE 00000018 R	mov ESI, OFFSET user.array1                             ; points to array1 for user values
+
+ 00000257			LOOP1:                                                  ; beginning of LOOP1
+ 00000257  3B 06		cmp EAX, [ESI]                                          ; compares to see if value is already in structure
+ 00000259  74 0B		je JUMP1                                                ; if equal, jump to JUMP1
+ 0000025B  83 C6 04		add ESI, 4                                              ; moves to next value
+ 0000025E  E2 F7		loop LOOP1                                              ; end of LOOP1
+
+ 00000260			JUMP2:                                                  ; beginning of JUMP2
+ 00000260  B8 00000001		mov EAX, 1                                              ; moves 1 into EAX for comparison in main proc (valid)
+ 00000265  C3			ret                                                     ; return to main proc
+
+ 00000266			JUMP1:                                                  ; beginning of JUMP1
+ 00000266  B8 00000000		mov EAX, 0                                              ; moves 0 into EAX for comparison in main proc (not valid)
+ 0000026B  C3			ret                                                     ; returns to main proc
+
+ 0000026C			valid ENDP                                              ; end of valid sub-proc
+				 
+				END main                                                ; end of program
